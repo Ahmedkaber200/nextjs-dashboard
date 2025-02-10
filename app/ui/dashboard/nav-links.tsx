@@ -16,7 +16,7 @@ const links = [
   { name: "Invoices", href: "/ui/dashboard/invoices", icon: DocumentDuplicateIcon },
 ];
 
- 
+
 export default function NavLinks() {
   const pathname = usePathname();
  
