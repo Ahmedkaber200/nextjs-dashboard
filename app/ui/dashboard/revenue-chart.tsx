@@ -1,3 +1,4 @@
+'use client';
 import { generateYAxis } from '@/app/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
@@ -8,15 +9,15 @@ import { Revenue } from '@/app/lib/definitions';
 // https://www.tremor.so/
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
-
-export default async function RevenueChart({
+// export default function RevenueChart({ revenue }) {
+export function RevenueChart({
   revenue,
 }: {
   revenue: Revenue[];
 }) {
   const chartHeight = 350;
   // NOTE: Uncomment this code in Chapter 7
-
+  
   const { yAxisLabels, topLabel } = generateYAxis(revenue);
 
   if (!revenue || revenue.length === 0) {
