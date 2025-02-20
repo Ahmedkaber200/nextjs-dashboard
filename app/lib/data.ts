@@ -1,34 +1,5 @@
 import { sql } from '@vercel/postgres';
 
-// import postgres from "postgres";
-
-// // PostgreSQL کنکشن سٹرنگ (.env فائل میں محفوظ رکھیں)
-// const sql = postgres(process.env.POSTGRES_URL!, {
-//   ssl: 'require', // اگر آپ کو SSL کنکشن کی ضرورت ہو
-// });
-
-// export default sql;
-
-
-// import { sql } from "postgres";
-// import postgres from 'postgres';
-
-// import postgres from 'postgres';
- 
-// // const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
- 
-// // ...
-
-// const sql = postgres(process.env.DATABASE_URL as string, {
-//   ssl: 'require',
-// });
-
-// export default sql;
-
-
-// import postgres from '@vercel/postgres';
-// const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
 import {
   CustomerField,
   CustomersTableType,
@@ -99,10 +70,17 @@ export async function fetchCardData() {
       invoiceStatusPromise,
     ]);
 
+    // Debugging: Check the structure of data
+    console.log(data);
+
     const numberOfInvoices = Number(data[0].rows[0].count ?? '0');
+    console.log(numberOfInvoices);
     const numberOfCustomers = Number(data[1].rows[0].count ?? '0');
+    console.log(numberOfCustomers);
     const totalPaidInvoices = formatCurrency(data[2].rows[0].paid ?? '0');
+    console.log(totalPaidInvoices);
     const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
+    console.log(totalPendingInvoices);
 
     return {
       numberOfCustomers,
