@@ -179,7 +179,7 @@ export async function fetchCustomers() {
   try {
     const data = await sql<CustomerField>`
       SELECT
-        id,
+        id, 
         name
       FROM customers
       ORDER BY name ASC
