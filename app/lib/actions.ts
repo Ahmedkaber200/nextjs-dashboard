@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import postgres from 'postgres';
 
 // Check if POSTGRES_URL is defined
@@ -39,9 +40,8 @@ export async function createInvoice(formData: FormData) {
       INSERT INTO invoices (customer_id, amount, status, date)
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
-
-    // Revalidate the invoices page to refresh the data
-    revalidatePath('/ui/dashboard/invoices');
+    // return redirect('/invoices');
+  
   } catch (error) {
     // Log the error for debugging
     console.error('Failed to create invoice:', error);
