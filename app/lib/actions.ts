@@ -21,7 +21,6 @@ const CreateInvoice = z.object({
 });
 
 export async function createInvoice(formData: FormData) {
-  try {
     // Parse and validate form data
     const { customerId, amount, status } = CreateInvoice.parse({
       customerId: formData.get("customerId"),
@@ -36,21 +35,23 @@ export async function createInvoice(formData: FormData) {
     const date = new Date().toISOString().split("T")[0];
 
     // Insert data into the database
-    await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-    `;
-    // return redirect('/invoices');
-  } catch (error) {
-    // Log the error for debugging
-    console.error("Failed to create invoice:", error);
+    try {
+      await sql`
+        INSERT INTO invoices (customer_id, amount, status, date)
+        VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      `;
+    } catch (error) {
+      // We'll log the error to the console for now
+      console.error(error);
+    }
 
-    // Throw a custom error message
-    throw new Error("Failed to create invoice. Please check the form data.");
-  }
+    redirect('/ui/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
+  throw new Error('Failed to Delete Invoice');
+  
+   // Unreachable code block
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath("/dashboard/invoices");
 }
@@ -82,6 +83,5 @@ export async function updateInvoice(id: string, formData: FormData) {
     WHERE id = ${id}
   `;
 
-  revalidatePath("/ui/dashboard/invoices");
   redirect("/ui/dashboard/invoices");
 }
