@@ -3,15 +3,6 @@ import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers, fetchInvoiceById } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
-
-
-// export default async function Page(props: { params: Promise<{ id: string }> }) {
-//   const params = await props.params;
-//   const id = params.id;
-//   const [invoice, customers] = await Promise.all([
-//     fetchInvoiceById(id),
-//     fetchCustomers(),
-//   ]);
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const id = params.id;
@@ -20,9 +11,11 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     fetchCustomers(),
   ]);
 
+  // If invoice is not found, show 404 page
   if (!invoice) {
     notFound();
   }
+  
   return (
     <main>
       <Breadcrumbs

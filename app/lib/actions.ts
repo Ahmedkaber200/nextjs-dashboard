@@ -13,21 +13,57 @@ if (!process.env.POSTGRES_URL) {
 // Create a PostgreSQL connection
 const sql = postgres(process.env.POSTGRES_URL, { ssl: "require" });
 
-// Define the schema for invoice creation
+// // Define the schema for invoice creation
+// const CreateInvoice = z.object({
+//   customerId: z.string(),
+//   amount: z.number(),
+//   status: z.enum(["pending", "paid"]), // Assuming status can be 'pending' or 'paid'
+// });
+
+// Define the schema for invoice creation and updatez
 const CreateInvoice = z.object({
-  customerId: z.string(),
-  amount: z.number(),
-  status: z.enum(["pending", "paid"]), // Assuming status can be 'pending' or 'paid'
+  id: z.string(),
+  customerId: z.string({
+    invalid_type_error: 'Please select a customer.',
+  }),
+  amount: z.coerce
+  .number()
+  .gt(0, { message: 'Please enter an amount greater than $0.' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select an invoice status.',
+}),
+date: z.string(),
 });
 
-export async function createInvoice(formData: FormData) {
+export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createInvoice(prevState: State, formData: FormData) {
     // Parse and validate form data
-    const { customerId, amount, status } = CreateInvoice.parse({
-      customerId: formData.get("customerId"),
-      amount: Number(formData.get("amount")), // Convert string to number
-      status: formData.get("status"),
+
+     // Validate form fields using Zod
+  const validatedFields = CreateInvoice.safeParse({
+    customerId: formData.get('customerId'),
+    amount: Number(formData.get("amount")),
+    status: formData.get('status'),
     });
 
+      // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Invoice.',
+    };
+  }
+
+    // Prepare data for insertion into the database
+    const { customerId, amount, status } = validatedFields.data;
     // Convert amount to cents
     const amountInCents = amount * 100;
 
@@ -59,10 +95,16 @@ export async function deleteInvoice(id: string) {
 // Define the schema for invoice creation and updatez
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.number(),
-  status: z.enum(["pending", "paid"]),
-  date: z.string(),
+  customerId: z.string({
+    invalid_type_error: 'Please select a customer.',
+  }),
+  amount: z.coerce
+  .number()
+  .gt(0, { message: 'Please enter an amount greater than $0.' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select an invoice status.',
+}),
+date: z.string(),
 });
 
 // Use Zod to update the expected types
@@ -85,3 +127,4 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   redirect("/ui/dashboard/invoices");
 }
+
