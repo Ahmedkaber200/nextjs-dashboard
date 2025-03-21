@@ -5,6 +5,28 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import postgres from "postgres";
 
+import { signIn } from '../ui/auth';
+import { AuthError } from 'next-auth';
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
+
 // Check if POSTGRES_URL is defined
 if (!process.env.POSTGRES_URL) {
   throw new Error("POSTGRES_URL environment variable is not defined.");
@@ -12,6 +34,9 @@ if (!process.env.POSTGRES_URL) {
 
 // Create a PostgreSQL connection
 const sql = postgres(process.env.POSTGRES_URL, { ssl: "require" });
+
+
+
 
 // // Define the schema for invoice creation
 // const CreateInvoice = z.object({

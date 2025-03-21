@@ -4,7 +4,8 @@ import LatestInvoices from "@/app/ui/dashboard/latest-invoices";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchCardData } from "@/app/lib/data"; // Remove fetchLatestInvoices
 import { Suspense } from "react";
-// import CardWrapper from '@/app/ui/dashboard/cards';
+import { auth } from '../../auth'; // Import auth function
+import { redirect } from 'next/navigation'; // Import redirect function
 import {
   RevenueChartSkeleton,
   LatestInvoicesSkeleton,
@@ -19,10 +20,16 @@ export default async function Page() {
     totalPendingInvoices,
   } = await fetchCardData();
 
+     // Check if user is logged in
+     const session = await auth();
+     if (!session) {
+       redirect('/ui/login'); // Redirect to login page if user is not logged in
+     }
+
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Dashboard
+        Dashboardss
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Card title="Collected" value={totalPaidInvoices} type="collected" />
